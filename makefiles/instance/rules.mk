@@ -60,7 +60,7 @@ ALL_LOGOSFLAGS = $(_THEOS_INTERNAL_LOGOSFLAGS) $(ADDITIONAL_LOGOSFLAGS) $(call _
 ALL_LDFLAGS = $(_THEOS_INTERNAL_LDFLAGS) $(ADDITIONAL_LDFLAGS) $(_THEOS_TARGET_LDFLAGS) $(call __schema_var_all,$(THEOS_CURRENT_INSTANCE)_,LDFLAGS) $(call __schema_var_all,,LDFLAGS)
 
 ifneq ($(TARGET_CODESIGN),)
-_THEOS_CODESIGN_COMMANDLINE = CODESIGN_ALLOCATE=$(TARGET_CODESIGN_ALLOCATE) $(TARGET_CODESIGN) $(or $(call __schema_var_all,$(THEOS_CURRENT_INSTANCE)_,CODESIGN_FLAGS),$(TARGET_CODESIGN_FLAGS))
+_THEOS_CODESIGN_COMMANDLINE = CODESIGN_ALLOCATE="$(THEOS)/bin/codesign_allocate_wrapper.sh" $(TARGET_CODESIGN) $(or $(call __schema_var_all,$(THEOS_CURRENT_INSTANCE)_,CODESIGN_FLAGS),$(TARGET_CODESIGN_FLAGS))
 else
 _THEOS_CODESIGN_COMMANDLINE = 
 endif
@@ -91,6 +91,10 @@ internal-$(_THEOS_CURRENT_TYPE)-stage:: before-$(THEOS_CURRENT_INSTANCE)-stage i
 .SUFFIXES:
 
 .SUFFIXES: .m .mm .c .cc .cpp .xm
+
+$(THEOS_OBJ_DIR)/%.fakr_file_extension.$(_THEOS_OBJ_FILE_TAG).o: %.fakr_file_extension
+	echo Ah, we've a funny guy, do we?
+	#I honestly have no idea why, but the first rule doesn't seem to work. So that's why this is here.
 
 $(THEOS_OBJ_DIR)/%.m.$(_THEOS_OBJ_FILE_TAG).o: %.m
 	$(ECHO_COMPILING)$(TARGET_CXX) -x objective-c -c $(ALL_CFLAGS) $(ALL_OBJCFLAGS) $(_THEOS_TARGET_ONLY_OBJCFLAGS) $< -o $@$(ECHO_END)
